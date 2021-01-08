@@ -5,6 +5,6 @@ declare namespace NodeJS {
     PUBLIC_URL: string
     readonly REACT_APP_KAKAO_TRANSLATE_URL: string
     readonly REACT_APP_PAPAGO_TRANSLATE_URL: string
-    readonly REACT_APP_GOOGLE_TRANSLATE_UR: string
+    readonly REACT_APP_GOOGLE_TRANSLATE_URL: string
   }
 }
