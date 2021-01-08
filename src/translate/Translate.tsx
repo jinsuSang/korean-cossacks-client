@@ -59,7 +59,7 @@ const Translate = () => {
       const responses: AxiosResponse[] = await Promise.all([
         axios.post(process.env.REACT_APP_KAKAO_TRANSLATE_URL, requestData),
         axios.post(process.env.REACT_APP_PAPAGO_TRANSLATE_URL, requestData),
-        axios.post(process.env.REACT_APP_GOOGLE_TRANSLATE_UR, requestData),
+        axios.post(process.env.REACT_APP_GOOGLE_TRANSLATE_URL, requestData),
       ])
 
       const [kakaoResult, papagoResult, googleResult]: string[] = responses.map(
@@ -88,7 +88,7 @@ const Translate = () => {
         const target = 'uk'
         const requestData = { query: text, source: source, target: target }
         const response: AxiosResponse = await axios.post(
-          'http://localhost:3001/translate/google',
+          process.env.REACT_APP_GOOGLE_TRANSLATE_URL,
           requestData
         )
         const result: string = response.data.result
