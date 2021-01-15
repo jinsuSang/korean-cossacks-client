@@ -84,15 +84,34 @@ const Translate = () => {
 
         if (!text) return
 
-        const source = 'en'
-        const target = 'uk'
-        const requestData = { query: text, source: source, target: target }
-        const response: AxiosResponse = await axios.post(
+        const english = 'en'
+        const russian = 'ru'
+        const ukrainian = 'uk'
+
+        const enToRuRequest = {
+          query: text,
+          source: english,
+          target: russian,
+        }
+        const russianResponse: AxiosResponse = await axios.post(
           process.env.REACT_APP_GOOGLE_TRANSLATE_URL,
-          requestData
+          enToRuRequest
         )
-        const result: string = response.data.result
-        setUkrainianText(result)
+        const translatedRussian: string = russianResponse.data.result
+
+        const ruToUkRequest = {
+          query: translatedRussian,
+          source: russian,
+          target: ukrainian,
+        }
+
+        const ukrainianResponse: AxiosResponse = await axios.post(
+          process.env.REACT_APP_GOOGLE_TRANSLATE_URL,
+          ruToUkRequest
+        )
+        const translatedUkrainian: string = ukrainianResponse.data.result
+
+        setUkrainianText(translatedUkrainian)
         setShowUkrainianText(true)
       }
     } catch (error) {
