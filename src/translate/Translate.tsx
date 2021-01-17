@@ -27,19 +27,12 @@ const useStyles = makeStyles((theme: Theme) =>
 const Translate = () => {
   const classes = useStyles()
   const [query, setQuery] = useState('')
-  const [translatedWithKakao, setTranslatedWithKaKakao] = useState('')
-  const [translatedWithPapago, setTranslatedWithPapago] = useState('')
-  const [translatedWithGoogle, setTranslatedWithGoogle] = useState('')
+  const [translationTexts, setTranslationTexts] = useState<string[]>([])
   const [showButtonGroup, setShowButtonGroup] = useState(false)
   const [showUkrainianText, setShowUkrainianText] = useState(false)
   const [ukrainianText, setUkrainianText] = useState('')
 
-  useEffect(() => {}, [
-    translatedWithKakao,
-    translatedWithPapago,
-    translatedWithGoogle,
-    ukrainianText,
-  ])
+  useEffect(() => {}, [translationTexts, ukrainianText])
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value)
@@ -56,18 +49,26 @@ const Translate = () => {
     const requestData = { query: refinedQuery, source: source, target: target }
 
     try {
-      const responses: AxiosResponse[] = await Promise.all([
+      const responses = await Promise.allSettled([
         axios.post(process.env.REACT_APP_KAKAO_TRANSLATE_URL, requestData),
         axios.post(process.env.REACT_APP_PAPAGO_TRANSLATE_URL, requestData),
         axios.post(process.env.REACT_APP_GOOGLE_TRANSLATE_URL, requestData),
       ])
 
-      const [kakaoResult, papagoResult, googleResult]: string[] = responses.map(
-        (response) => response.data.result
+      const translationResults: string[] = responses.reduce(
+        (results: string[], response) => {
+          if (response.status === 'fulfilled') {
+            const {
+              data: { result },
+            } = response.value
+            results.push(result)
+          }
+          return results
+        },
+        []
       )
-      setTranslatedWithKaKakao(kakaoResult)
-      setTranslatedWithPapago(papagoResult)
-      setTranslatedWithGoogle(googleResult)
+
+      setTranslationTexts(translationResults)
       setShowButtonGroup(true)
     } catch (error) {
       console.error(error.message)
@@ -131,9 +132,7 @@ const Translate = () => {
         isShowing={showButtonGroup}
         handleClick={handleClick}
         typography={typographyTheme}
-        kakao={translatedWithKakao}
-        papago={translatedWithPapago}
-        google={translatedWithGoogle}
+        translationTexts={translationTexts}
       />
 
       <UkrainianText
